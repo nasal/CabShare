@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Cabshare</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" rel="stylesheet" />
+	<link href="styles/main.css" rel="stylesheet" />
+
+	<script src="cordova.js" type="text/javascript"></script>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
+	<script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js" type="text/javascript"></script>
+
+	<script src="scripts/login.js" type="text/javascript"></script>
+    <style>
+        .page {
+            padding: 10px;
+            text-align: center;
+        }
+        .button {
+            display: block;
+        }
+    </style>
+    <script>
+        $(function () {
+
+            function setterfunc(targetedelement, presetting) {
+                // Zaradi tega ni delal login, nekatere naprave preverjajo undefined in ne null :(
+                if (localStorage[targetedelement] == undefined || localStorage[targetedelement] === null) {
+                    localStorage[targetedelement] = presetting;
+                }
+            }
+
+            setterfunc('user_name', '');
+            setterfunc('user_surname', '');
+            setterfunc('user_number', '');
+            setterfunc('current-from', '');
+            setterfunc('current-to', '');
+            setterfunc('current-taxi', '');
+            setterfunc('current-action', '');
+
+            if (localStorage['user_number'] != "") {
+                //$('#first-button').attr('href', '#page-find-share');
+                $('#user_name').val(localStorage['user_name']);
+                $('#user_surname').val(localStorage['user_surname']);
+                $('#user_number').val(localStorage['user_number']);
+
+                //$('#user-info').text(localStorage['user_number']);
+            }
+
+            $('#login').click(function (e) {
+                //if ($('#login-firstname').val() != '') {
+                    localStorage['user_name'] = $('#login-firstname').val();
+                //}
+                //if ($('#login-surname').val()) {
+                    localStorage['user_surname'] = $('#login-surname').val();
+                //}
+                //if ($('#login-number').val()) {
+                    localStorage['user_number'] = $('#login-number').val();
+                //}
+            });
+
+            $('#current-way').click(function (e) {
+                localStorage['current-from'] = $('#current-from-select option:selected').text();
+                localStorage['current-to'] = $('#current-to-select option:selected').text();
+            });
+
+            $('.current-taxi').click(function (e) {
+                localStorage['current-taxi'] = $(this).text();
+                fillCurrent();
+            });
+
+            $('.current-action').click(function (e) {
+                localStorage['current-action'] = $(this).text();
+            });
+
+            function fillCurrent() {
+                $('#current-action').text(localStorage['current-action']);
+                $('#current-from').text(localStorage['current-from']);
+                $('#current-taxi').text(localStorage['current-taxi']);
+                $('#current-to').text(localStorage['current-to']);
+            }
+
+            $('#current-confirm').click(function (e) {
+                localStorage['current-from'] = '';
+                localStorage['current-to'] = '';
+                localStorage['current-taxi'] = '';
+                localStorage['current-action'] = '';
+            });
+
+        });
+    </script>
+</head>
+<body>
+
+	<!--Home-->
+	<div id="page-home" data-role="page">
+
+        <div class="page">
+            <h1 style="font-size: 5em; margin-bottom: 0; margin-top: 5px;">CAB!</h1>
+            <h2 style="margin-top: -10px; font-size: 2em;">SHARE</h2>
+
+            <img src="http://wp.streetwise.co/wp-content/uploads/2013/03/Split-My-Taxi-Logo.png" style="max-width: 80%; margin-bottom: 10px; margin-top: -5px;">
+            <a href="#page-login" id="first-button" data-role="button" data-icon="arrow-r" data-inline="true" data-iconpos="right" data-transition="slide">START</a>
+        </div>
+
+	</div>
+
+	<div id="page-login" data-role="page" data-add-back-btn="true">
+
+		<!--Header-->
+		<div data-role="header" data-position="fixed">
+            <a href="#" class="ui-btn ui-shadow ui-icon-carat-l ui-corner-all ui-btn-icon-notext" data-rel="back">NAZAJ</a>
+			<h1>PODATKI</h1>
+		</div>
+
+        <div class="page">
+		    <!--Content-->
+		    <div data-role="content">
+			    <div id="login-wrap">
+				    <form data-ajax="false" id="login-form">
+					    <!--<h3 id="login-text">Enter your credentials:</h3>-->
+					    <div>
+                            <div style="text-align: left;">Ime:</div>
+						    <input id="login-firstname" type="text" placeholder="Ime" />
+                            <div style="text-align: left;">Priimek:</div>
+						    <input id="login-surname" type="text" placeholder="Priimek" />
+                            <div style="text-align: left;">Tel. št:</div>
+                            <input id="login-number" type="text" placeholder="Cifra" />
+					    </div>
+
+                        <a href="#page-find-share" id="login" data-transition="slide" data-role="button" data-icon="arrow-r" data-iconpos="right" data-inline="true">NAPREJ</a>
+				    </form>
+			    </div>
+
+		    </div>
+
+        </div>
+
+	</div>
+
+	<div id="page-taxiselection" data-role="page" data-add-back-btn="true">
+
+		<!--Header-->
+		<div id="page-location-header" data-role="header" data-position="fixed">
+            <a href="#" class="ui-btn ui-shadow ui-icon-carat-l ui-corner-all ui-btn-icon-notext" data-rel="back">NAZAJ</a>
+			<h1>IZBERITE TAKSI</h1>
+            <a href="#page-settings" data-transition="slide" class="ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext">Settings</a>
+		</div>
+
+        <div class="page">
+            <a href="#page-confirm" class="current-taxi" data-role="button" data-inline="true" data-transition="slide">METRO</a><br />
+            <a href="#page-confirm" class="current-taxi" data-role="button" data-inline="true" data-transition="slide">LAGUNA</a><br />
+            <a href="#page-confirm" class="current-taxi" data-role="button" data-inline="true" data-transition="slide">RONDO</a>
+        </div>
+
+	</div>
+
+    <div id="page-find-share" data-role="page" data-add-back-btn="true">
+
+		<div id="page-find-share-header" data-role="header" data-position="fixed">
+            <a href="#" class="ui-btn ui-shadow ui-icon-carat-l ui-corner-all ui-btn-icon-notext" data-rel="back">NAZAJ</a>
+			<h1>FIND / SHARE?</h1>
+            <a href="#page-settings" data-transition="slide" class="ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext">Settings</a>
+		</div>
+
+        <div class="page">
+            <a href="#page-whereTo" class="current-action" data-transition="slide" data-icon="search" data-role="button" data-inline="true" style="margin-top: 20px;">IŠČEM</a><br />
+            <a href="#page-whereTo" class="current-action" data-transition="slide" data-icon="action" data-role="button" data-inline="true">SHARE</a>
+        </div>
+
+	</div>
+
+    <div id="page-whereTo" data-role="page" data-add-back-btn="true">
+
+		<div id="page-whereTo-header" data-role="header" data-position="fixed">
+            <a href="#" class="ui-btn ui-shadow ui-icon-carat-l ui-corner-all ui-btn-icon-notext" data-rel="back">NAZAJ</a>
+			<h1>KAM?</h1>
+            <a href="#page-settings" data-transition="slide" class="ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext">Settings</a>
+		</div>
+
+        <div class="page">
+            <h3 id="where-at">Kje si:</h3>
+		    <div>
+			    <select name="whereAreYou" id="current-from-select">
+                    <option value="LJ">Ljubljana</option>
+                    <option value="NM">Novo mesto</option>
+			    </select>
+		    </div>
+            <h3 id="where-to">Kam greš:</h3>
+		    <div>
+			    <select name="whereTo" id="current-to-select">
+                    <option value="NM">Novo mesto</option>
+                    <option value="LJ">Ljubljana</option>
+			    </select>
+		    </div>
+
+            <a href="#page-taxiselection" id="current-way" data-transition="slide" data-icon="check" data-role="button" data-inline="true">POTRDI</a>
+        </div>
+
+	</div>
+
+    <div id="page-done" data-role="page" data-add-back-btn="true">
+
+		<div id="page-done-header" data-role="header" data-position="fixed">
+            <h1>ENJOY!</h1>
+		</div>
+
+        <div class="page">
+            <h1 style="font-size: 3.5em; text-align: center;">ENJOY<br />SHARING<br />A CAB<br />:)</h1>
+            <a href="#page-home" rel="external" id="current-confirm" data-icon="home" data-transition="slide" data-role="button" data-inline="true">PRVA STRAN</a>
+        </div>
+
+	</div>
+
+    <div id="page-confirm" data-role="page" data-add-back-btn="true">
+
+		<div id="page-confirm-header" data-role="header" data-position="fixed">
+            <a href="#" class="ui-btn ui-shadow ui-icon-carat-l ui-corner-all ui-btn-icon-notext" data-rel="back">NAZAJ</a>
+			<h1>CONFIRMATION</h1>
+            <a href="#page-settings" data-transition="slide" class="ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext">Settings</a>
+		</div>
+
+        <div class="page">
+            Find or share: <span id="current-action"></span><br />
+            From: <span id="current-from"></span><br />
+            To: <span id="current-to"></span><br />
+            Taxi: <span id="current-taxi"></span><br />
+            <a href="#page-done" data-transition="slide" data-role="button" data-inline="true">CONFIRM</a>
+        </div>
+
+	</div>
+
+    <div id="page-settings" data-role="page" data-add-back-btn="true">
+
+		<div id="page-settings-header" data-role="header" data-position="fixed">
+            <a href="#" data-transition="slide" class="ui-btn ui-shadow ui-icon-carat-l ui-corner-all ui-btn-icon-notext" data-rel="back">NAZAJ</a>
+            <h1>NASTAVITVE</h1>
+		</div>
+
+        <div class="page">
+            <div id="user-info"></div>
+            <div>
+                <div style="text-align: left;">Ime:</div>
+				<input id="user_name" type="text" placeholder="Ime" />
+                <div style="text-align: left;">Priimek:</div>
+				<input id="user_surname" type="text" placeholder="Priimek" />
+                <div style="text-align: left;">Tel. št:</div>
+                <input id="user_number" type="text" placeholder="Cifra" />
+			</div>
+        </div>
+
+	</div>
+
+	<script type="text/javascript">
+		document.addEventListener('deviceready', function () {
+			navigator.splashscreen.hide();
+		}, false);
+	</script>
+</body>
+</html>
